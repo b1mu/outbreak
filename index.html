@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OUTBREAK.EXE</title>
+<style>
+:root{--bg:#0a0714;--pn:#150e2acc;--ln:#ffffff1f;--tx:#efe9ff;--mu:#9a8fc0;--ac:#ff3d81;--ak:var(--ac);--wn:#ffb020;--ok:#35e0c2;box-sizing:border-box;color-scheme:dark}
+@media(prefers-color-scheme:light){:root{--bg:#efeaf9;--pn:#ffffffdd;--ln:#0000001f;--tx:#1b1233;--mu:#5e5580;--ak:color-mix(in srgb,var(--ac) 65%,#000);color-scheme:light}}
+body[data-th=amber]{--ac:#ffb020}body[data-th=ice]{--ac:#38bdf8}body[data-th=mint]{--ac:#35e0c2}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:15px/1.35 "Trebuchet MS","Segoe UI",system-ui,sans-serif;overflow:hidden;user-select:none}
+h1,h2,.mono{font-family:"Courier New",ui-monospace,monospace}
+#app{position:absolute;inset:0;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
+#bg{position:absolute;inset:0;width:100%;height:100%;opacity:.35}
+.scr{display:none;position:absolute;inset:0;padding:max(10px,env(safe-area-inset-top,0)) max(14px,env(safe-area-inset-right,0)) max(10px,env(safe-area-inset-bottom,0)) max(14px,env(safe-area-inset-left,0))}
+.scr.on{display:flex;gap:14px}
+.card{background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:12px;backdrop-filter:blur(6px)}
+button{font:inherit;color:var(--tx);background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px 14px;cursor:pointer;text-align:left}
+button:active{transform:scale(.97)}button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.pri{background:var(--ac);color:#1a0610;border:0;font-weight:700;box-shadow:0 0 22px color-mix(in srgb,var(--ac) 55%,transparent)}
+#menu{align-items:center}
+.hero{flex:1.3;display:flex;flex-direction:column;gap:9px;position:relative}
+h1{font-size:clamp(32px,8vw,62px);margin:0;letter-spacing:-2px;line-height:.95}
+h1 i{color:var(--ak);font-style:normal;animation:gl 2.4s infinite}
+@keyframes gl{0%,92%,100%{opacity:1}94%{opacity:.3;transform:translateX(3px)}96%{opacity:1}}
+.sub{color:var(--mu);margin:0 0 6px}
+.hero button{font-size:17px;max-width:300px;display:flex;justify-content:space-between;align-items:center}
+.bdg{background:var(--wn);color:#241500;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:700;animation:pu 1.2s infinite}
+@keyframes pu{50%{transform:scale(1.15)}}
+.side{flex:1;display:flex;flex-direction:column;gap:10px;max-width:340px}
+.bar{height:8px;border-radius:9px;background:var(--ln);overflow:hidden}.bar b{display:block;height:100%;background:var(--ac);transition:width .4s}
+.mu{color:var(--mu);font-size:13px}
+#setup{flex-direction:column}.scr#setup.on{display:flex}
+.row{display:flex;gap:10px;min-height:0}
+.types{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;flex:1;min-height:0}
+.ty{min-width:128px;display:flex;flex-direction:column;gap:3px;align-items:flex-start}.ty.sel{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac) inset}
+.ty big{font-size:28px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:6px 11px;border-radius:99px}.chip.sel{background:var(--ac);color:#1a0610;border:0;font-weight:700}
+input{font:inherit;background:var(--ln);border:1px solid var(--ln);color:var(--tx);border-radius:10px;padding:8px 10px;width:100%}
+#game{flex-direction:column;gap:6px;padding:max(6px,env(safe-area-inset-top,0)) max(10px,env(safe-area-inset-right,0)) max(6px,env(safe-area-inset-bottom,0)) max(10px,env(safe-area-inset-left,0))}
+.hud{display:flex;gap:6px;align-items:center}.hud>*{flex:none}.hud .sp{flex:1}
+.hud button{padding:6px 10px}.stat{font-weight:700}
+#map{flex:1;min-height:0;width:100%;border-radius:12px;background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--ac) 10%,var(--bg)),var(--bg));border:1px solid var(--ln)}
+.n{cursor:pointer}.n text{fill:var(--tx);font-size:12px;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:3px}
+.aw{animation:pu 1.4s infinite;transform-box:fill-box;transform-origin:center}
+.lk{stroke:var(--ln);stroke-width:2;stroke-dasharray:4 5}
+.bb{cursor:pointer;animation:pu 1s infinite}.bb circle{fill:var(--ok);stroke:#fff;stroke-width:2}.bb.sh circle{fill:#38bdf8}.bb text{text-anchor:middle;font-size:13px;fill:#04101a;font-weight:700}
+.foot{display:flex;gap:10px;align-items:center}.foot .g{flex:1}.foot small{display:flex;justify-content:space-between}
+#tk{flex:2;color:var(--ak);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{position:absolute;left:14px;top:52px;max-width:210px;display:none;font-size:13px;z-index:3}
+#modal{position:absolute;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:9;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
+#modal.on{display:flex}
+.mb{background:var(--bg);border:1px solid var(--ln);border-radius:16px;padding:14px;width:min(92%,760px);max-height:92%;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.mb h2{margin:0;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.c{display:flex;flex-direction:column;gap:2px;opacity:.5}.c.ok{opacity:1;border-color:var(--ac)}.c.own{opacity:1;background:color-mix(in srgb,var(--ac) 22%,var(--bg));border-color:var(--ac)}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}.days div{border:1px solid var(--ln);border-radius:10px;padding:8px 2px}.days .dn{background:var(--ac);color:#1a0610}.days .nx{border-color:var(--wn)}
+#rot{display:none;position:absolute;inset:0;z-index:99;background:var(--bg);align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;font-size:20px}
+#rot span{font-size:64px;animation:rt 2s infinite}@keyframes rt{50%{transform:rotate(90deg)}}
+@media(orientation:portrait){#rot{display:flex}#app{visibility:hidden}}
+@media(max-height:420px){.hero button{padding:7px 12px;font-size:15px}.sub{display:none}.hero{gap:6px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+/* 2010 web-game skin + responsive sizing */
+:root{--bg:#0b1d36;--pn:#1c3f6ccc;--ln:#ffffff40;--tx:#fff;--mu:#bcd6f2;--ac:#ff9a1f;--ak:#ffe08a;--ok:#5fe04a;color-scheme:dark}
+body[data-th=amber]{--ac:#ffd21f}body[data-th=ice]{--ac:#38bdf8}body[data-th=mint]{--ac:#35e0a0}
+html{font-size:clamp(11px,min(2.4vh,1.7vw),19px)}
+html,body{font:1rem/1.3 Verdana,Tahoma,"Trebuchet MS",sans-serif;background:radial-gradient(ellipse at 50% 0,#3d86d0 0,#14406f 45%,#071526 100%) fixed;text-shadow:0 1px 1px #0008}
+h1,h2,.mono{font-family:Verdana,Tahoma,sans-serif}
+#app{position:fixed;inset:0;height:100dvh}
+#app::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,#ffffff0a 0 6px,transparent 6px 12px);pointer-events:none}
+#bg{display:none!important}
+.card{background:linear-gradient(#ffffff38,#ffffff10 50%,#00000038 50%,#0000004d);border:1px solid #ffffff66;border-radius:.7em;box-shadow:0 3px 8px #000a,inset 0 1px 0 #fff7;padding:.6em .8em;backdrop-filter:none}
+button{background:linear-gradient(#8cc4ff,#3b86e8 50%,#1d5fc4 50%,#3a8af0);color:#fff;border:1px solid #0a3470;border-radius:.6em;padding:.5em .9em;font-weight:700;text-shadow:0 -1px 0 #0a3a80;box-shadow:inset 0 1px 0 #fffa,0 2px 4px #000a}
+button:hover{filter:brightness(1.12)}button:active{transform:translateY(1px);filter:brightness(.92)}
+button.pri{background:linear-gradient(#c6f784,#66c21f 50%,#3f9a05 50%,#7ed332);border-color:#2a6a00;text-shadow:0 -1px 0 #2a6a00;box-shadow:inset 0 1px 0 #fffb,0 2px 4px #000a}
+.card.ty,.card.c{box-shadow:0 3px 8px #000a,inset 0 1px 0 #fff7;color:#fff}
+.ty.sel{border-color:#ffd27a;box-shadow:0 0 .9em #ffb020,inset 0 1px 0 #fff7}
+.chip{border-radius:2em;padding:.3em .8em}.chip.sel{background:linear-gradient(#ffffff90,#ffffff10 50%,#0003 50%),var(--ac);color:#fff;border:1px solid #7a3d00}
+.hero{gap:.6em}.hero button{max-width:20em;font-size:1.3rem;padding:.55em 1em;border-radius:.9em}
+h1{font:900 clamp(30px,9vh,64px)/1 "Arial Black",Impact,Verdana,sans-serif;letter-spacing:-1px;background:linear-gradient(#fff,#a9d6ff 50%,#3a86dc 50%,#8cc4ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #05204a) drop-shadow(0 4px 6px #000a);-webkit-box-reflect:below -.2em linear-gradient(transparent 55%,#fff3);text-shadow:none;width:max-content}
+h1 i{background:linear-gradient(#ffe5a8,#ffa31f 50%,#e86a00 50%,#ffb43d);-webkit-background-clip:text;background-clip:text;color:transparent;animation:none}
+.sub{font-style:italic;color:#d6e8ff}
+.hero::after{content:"NEW! v2.0";position:absolute;top:-.2em;right:0;background:linear-gradient(#ff8a8a,#d41818);border:1px solid #fff;border-radius:.4em;padding:.1em .6em;font-weight:700;transform:rotate(6deg);box-shadow:0 2px 5px #000a}
+.side{max-width:22em}
+.bar{height:1em;border-radius:1em;background:#06142a;border:1px solid #000a;box-shadow:inset 0 2px 4px #000c}.bar b{position:relative;border-radius:1em}.bar b::after{content:"";position:absolute;inset:0;background:linear-gradient(#ffffff90,#ffffff15 50%,#0003 50%)}
+.ty{min-width:9em}.ty big{font-size:2.2em}
+#map{background:radial-gradient(ellipse at 50% 35%,#4d9be0,#12508f 60%,#0a2f5e);border:2px solid #9cc7f2;border-radius:.7em;box-shadow:inset 0 0 2.5em #0008,0 3px 8px #000a}
+.land{fill:#7fae55;stroke:#d9f0b0;stroke-width:1.5;stroke-linejoin:round;filter:drop-shadow(0 2px 2px #0006)}
+.n text{font-size:11px;font-weight:700}.n circle{stroke:#fff}.lk{stroke:#ffffff66}
+#modal .mb,.mb{background:linear-gradient(#3a6fa6,#10305a);border:2px solid #a9d0f7;border-radius:.9em;box-shadow:0 8px 30px #000c,inset 0 1px 0 #fff6}
+.grid{grid-template-columns:repeat(auto-fill,minmax(11em,1fr))}
+.hud button{padding:.3em .6em}.foot{gap:.8em}
+#tk{color:#ffe08a}
+@media(max-height:380px){.sub,.hero::after{display:none}.side .card:last-child{display:none}}
+</style></head><body data-th="neon">
+<div id="rot"><span>📱</span>Rotate your device<br><small class="mu">OUTBREAK.EXE plays in landscape</small></div>
+<div id="app"><canvas id="bg"></canvas>
+<section id="menu" class="scr on">
+ <div class="hero"><h1 class="mono">OUTBREAK<i>.EXE</i></h1><p class="sub">Write the virus. Infect the planet. Outrun the patch.</p>
+ <button class="pri" id="bPlay">▶ New infection</button>
+ <button id="bDaily"><span>🎁 Daily reward</span><span class="bdg" id="dBdg">Ready</span></button>
+ <button id="bAch">🏆 Achievements</button><button id="bSet">⚙ Settings</button></div>
+ <div class="side"><div class="card"><div class="mono" id="lvl" style="font-size:20px"></div><div class="bar"><b id="xpb"></b></div><div class="mu" id="xpt" style="margin-top:4px"></div></div>
+ <div class="card"><div id="stk"></div><div class="mu" id="rec"></div></div>
+ <div class="card mu" id="tip"></div></div>
+</section>
+<section id="setup" class="scr">
+ <div class="hud"><button id="sBack">← Back</button><h2 class="mono" style="margin:0">Choose your strain</h2></div>
+ <div class="row" style="flex:1"><div class="types" id="types"></div>
+ <div class="card" style="width:min(300px,38%);display:flex;flex-direction:column;gap:8px;overflow:auto">
+  <div id="tdesc"></div><div class="chips" id="diffs"></div><input id="vname" maxlength="16" value="Nightfall">
+  <div class="mu" id="bonus"></div><button class="pri" id="bGo">Launch virus</button></div></div>
+</section>
+<section id="game" class="scr">
+ <div class="hud"><button id="gMenu">☰</button><span class="mono stat" id="gName"></span><span class="mu" id="gDay"></span><span class="sp"></span>
+  <span class="stat" style="color:var(--ak)" id="gPts"></span>
+  <button class="pri" id="gEvo">🧬 Evolve</button>
+  <button data-s="0">⏸</button><button data-s="1">▶</button><button data-s="2">⏩</button><button data-s="3">⏭</button></div>
+ <div style="position:relative;flex:1;min-height:0;display:flex"><div id="info" class="card"></div>
+ <svg id="map" viewBox="0 0 1000 480" preserveAspectRatio="xMidYMid meet"><g id="land"></g><g id="lks"></g><g id="nds"></g><g id="bub"></g></svg></div>
+ <div class="foot"><div class="g"><small><span>Infected</span><b id="fI"></b></small><div class="bar"><b id="bI" style="background:var(--ok)"></b></div></div>
+  <div class="g"><small><span>Bricked</span><b id="fD"></b></small><div class="bar"><b id="bD"></b></div></div>
+  <div class="g"><small><span>Patch</span><b id="fP"></b></small><div class="bar"><b id="bP" style="background:#38bdf8"></b></div></div>
+  <div id="tk" class="mono"></div></div>
+</section>
+<div id="modal"></div></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],NS="http://www.w3.org/2000/svg";
+let S={xp:0,games:0,wins:0,f:{},d:{last:"",streak:0,bonus:0},th:"neon",snd:1,hint:1};
+try{Object.assign(S,JSON.parse(localStorage.getItem("ox")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("ox",JSON.stringify(S))}catch(e){}};
+let AC;const beep=(f=520,d=.07)=>{return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type="triangle";o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}};
+const fm=m=>m>=1000?(m/1000).toFixed(2)+"B":m>=1?m.toFixed(1)+"M":Math.round(m*1000)+"K";
+const REG=[["N. America W",130,105,150,.9],["N. America E",240,115,230,.9],["Central America",215,235,120,.4],["S. America N",295,290,200,.4],["S. America S",290,385,130,.5],["W. Europe",478,125,330,.9],["E. Europe",565,115,160,.6],["Russia",720,70,140,.6],["N. Africa",505,205,200,.35],["Sub-Saharan Africa",545,305,700,.15],["Middle East",635,208,250,.55],["India",715,260,1400,.3],["China",800,155,1400,.6],["Japan/Korea",906,165,200,.9],["SE Asia",815,310,700,.3],["Oceania",875,392,40,.9]];
+const LK=[[0,1],[1,2],[2,3],[3,4],[1,5],[5,6],[6,7],[5,8],[8,9],[8,10],[6,10],[10,11],[11,12],[12,13],[12,7],[11,14],[12,14],[14,15],[10,9],[3,8]];
+const TYPES=[{n:"Trojan",i:"🐴",d:"Balanced. Hides inside useful apps.",t:1,l:1,st:.05,p:1},{n:"Worm",i:"🪱",d:"Spreads fast, but noisy.",t:1.3,l:1,st:-.05,p:1},{n:"Ransomware",i:"🔒",d:"Hits hard. Devices brick faster.",t:.9,l:1.5,st:0,p:1},{n:"Spyware",i:"👁",d:"Very stealthy. Earns extra CPU.",t:.9,l:.9,st:.2,p:1.6},{n:"Botnet",i:"🕸",d:"Cable hops reach farther.",t:1,l:1,st:0,p:1,x:.4},{n:"Zero-Day",i:"⚡",d:"Patch research runs slower.",t:1.05,l:1,st:.05,p:1,pr:.2},{n:"Cryptojacker",i:"₿",d:"Mines coins on infected devices. Big CPU income, low lethality.",t:1,l:.7,st:.15,p:2,g:1}];
+const DIFF=[["Casual",.6],["Normal",1],["Brutal",1.5]];
+const UP=[["email","T","Phishing Email",6,{t:.1}],["usb","T","USB Drop",4,{t:.07}],["wifi","T","Wi-Fi Sniffing",8,{t:.12}],["p2p","T","P2P Torrents",10,{t:.15}],["cloud","T","Cloud Sync",14,{t:.2}],["cable","T","Undersea Cable Hop",16,{x:1,t:.05}],["zc","T","Zero-Click Exploit",26,{t:.3}],
+["pop","S","Pop-up Ads",3,{s:1,t:.03}],["lag","S","System Lag",4,{s:1,t:.02}],["theft","S","Data Theft",10,{s:3,g:1}],["lock","S","Screen Lock",12,{s:4,l:.02}],["corr","S","File Corruption",16,{s:5,l:.04}],["crypt","S","Disk Encryption",22,{s:6,l:.07}],["brick","S","Firmware Brick",30,{s:8,l:.13}],["panic","S","Kernel Panic",42,{s:10,l:.22}],
+["obf","A","Code Obfuscation",6,{st:.12}],["poly","A","Polymorphic Engine",14,{st:.18}],["root","A","Rootkit",22,{st:.25}],["ai","A","AI Evasion",32,{st:.3}],["fw","A","Firewall Bypass",10,{fw:.3}],["ofl","A","Offline Persistence",12,{fw:.2}],["pr1","A","Patch Resistance I",18,{pr:.2}],["pr2","A","Patch Resistance II",30,{pr:.3}],["auto","A","Auto-Harvest",20,{au:1}],["miner","S","Hidden Miner",8,{g:1,s:1}],["gpu","S","GPU Hijack",16,{g:2,s:3}],["wallet","S","Wallet Stealer",24,{g:3,s:4}],["tor","A","Tor Command Server",14,{st:.15}],["mix","A","Coin Mixer",20,{st:.2,g:1}]];
+const FXN={t:"Spread",s:"Severity",l:"Lethality",st:"Stealth",fw:"Firewall bypass",pr:"Patch resistance",x:"Cable reach",g:"Passive CPU",au:"Auto-collect"};
+const ACH=[["Patient Zero","Win a game",s=>s.wins>=1],["Persistent","Play 3 games",s=>s.games>=3],["Nightmare","Win on Brutal",s=>s.f.b],["Global Outbreak","Infect every region in one run",s=>s.f.all],["Speed Run","Win in under 250 days",s=>s.f.fast],["Mad Scientist","Own 12 upgrades in one run",s=>s.f.evo],["Veteran","Reach level 5",s=>s.xp>=400],["Regular","Reach a 3-day streak",s=>s.d.streak>=3]];
+const TIPS=["Stealth upgrades delay the patch. Severity wakes the world up.","Tap the green ◆ bubbles for CPU. Tap blue 🛡 bubbles to slow the patch.","Rich regions run strong firewalls. Poor ones fall faster.","Tap an owned upgrade to refund it and rebuild your strain.","Bricking devices only works once enough are infected. Spread first.","Come back every day. Streaks give bigger starting CPU."];
+const today=()=>new Date().toDateString(),lvl=()=>Math.floor(S.xp/100)+1;
+function show(id){$$(".scr").forEach(e=>e.classList.toggle("on",e.id==id));$("#bg").style.display=id=="game"?"none":"block"}
+function modal(h){$("#modal").innerHTML=`<div class="mb">${h}</div>`;$("#modal").classList.add("on")}
+function closeM(){$("#modal").classList.remove("on");$("#modal").innerHTML="";if(G&&G.paused){G.sp=G.paused;G.paused=0;run()}}
+$("#modal").addEventListener("pointerdown",e=>{if(e.target.id=="modal")closeM()});
+// MENU
+function menu(){show("menu");const l=lvl(),x=S.xp%100;$("#lvl").textContent="LVL "+l+" · "+["Script kiddie","Hacker","Black hat","Architect","Legend"][Math.min(4,Math.floor((l-1)/2))];
+$("#xpb").style.width=x+"%";$("#xpt").textContent=x+" / 100 XP · start bonus +"+Math.min(l-1,10)+" CPU";
+$("#stk").innerHTML="🔥 <b>"+S.d.streak+"</b> day streak";$("#rec").textContent=S.wins+" wins · "+S.games+" runs";
+$("#dBdg").style.display=S.d.last!==today()?"":"none";$("#tip").textContent="💡 "+TIPS[Math.random()*TIPS.length|0]}
+$("#bDaily").onclick=()=>{const can=S.d.last!==today(),nx=can?((new Date(Date.now()-864e5).toDateString()===S.d.last)?S.d.streak+1:1):S.d.streak;
+let h=`<h2>Daily reward</h2><div class="days">`;for(let i=1;i<=7;i++)h+=`<div class="${i<=S.d.streak&&!can||i<nx&&can?"dn":i==nx&&can?"nx":""}">Day ${i}<br><b>+${5*i}</b></div>`;
+h+=`</div><div class="mu">Pending bonus for next run: +${S.d.bonus} CPU. Streak resets if you miss a day.</div>`+(can?`<button class="pri" id="cl">Claim +${5*Math.min(nx,7)} CPU</button>`:`<div>Claimed today. Come back tomorrow for day ${Math.min(7,S.d.streak+1)}.</div>`)+`<button onclick="closeM()">Close</button>`;modal(h);
+if(can)$("#cl").onclick=()=>{S.d.streak=nx;S.d.last=today();S.d.bonus+=5*Math.min(nx,7);chk();save();beep(880,.15);closeM();menu()}};
+$("#bAch").onclick=()=>{let n=0,h=`<h2>Achievements</h2><div class="grid">`;ACH.forEach(a=>{const o=a[2](S);n+=o;h+=`<div class="card c ${o?"own":""}"><b>${o?"🏆":"🔒"} ${a[0]}</b><span class="mu">${a[1]}</span></div>`});modal(h+`</div><div class="mu">${n} / ${ACH.length} unlocked</div><button onclick="closeM()">Close</button>`)};
+$("#bSet").onclick=()=>{modal(`<h2>Settings</h2><div>Accent</div><div class="chips">${["neon","amber","ice","mint"].map(t=>`<button class="chip ${S.th==t?"sel":""}" data-t="${t}">${t}</button>`).join("")}</div>
+<div class="chips"><button class="chip" id="rs">Reset progress</button></div><button onclick="closeM()">Close</button>`);
+$$("[data-t]").forEach(b=>b.onclick=()=>{S.th=b.dataset.t;document.body.dataset.th=S.th;save();$("#bSet").click()});
+$("#rs").onclick=()=>{if(confirm("Erase all progress?")){localStorage.removeItem("ox");location.reload()}}};
+function chk(){ACH.forEach(a=>{if(a[2](S)&&!S.f["a"+a[0]]){S.f["a"+a[0]]=1;toast("🏆 "+a[0])}})}
+function toast(t){const d=document.createElement("div");d.className="card";d.style.cssText="position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:20;font-weight:700";d.textContent=t;$("#app").append(d);setTimeout(()=>d.remove(),2600)}
+// SETUP
+let ty=0,df=1,G=null;
+$("#bPlay").onclick=()=>{try{screen.orientation.lock("landscape").catch(()=>{})}catch(e){}beep(660);show("setup");setup()};
+$("#sBack").onclick=menu;
+function setup(){$("#types").innerHTML=TYPES.map((t,i)=>`<button class="card ty ${i==ty?"sel":""}" data-i="${i}"><big>${t.i}</big><b>${t.n}</b><span class="mu">${t.d}</span></button>`).join("");
+$$(".ty").forEach(b=>b.onclick=()=>{ty=+b.dataset.i;beep(500);setup()});const T=TYPES[ty];
+$("#tdesc").innerHTML=`<b>${T.i} ${T.n}</b><div class="mu">${T.d}</div>`;
+$("#diffs").innerHTML=DIFF.map((d,i)=>`<button class="chip ${i==df?"sel":""}" data-d="${i}">${d[0]}</button>`).join("");$$("[data-d]").forEach(b=>b.onclick=()=>{df=+b.dataset.d;setup()});
+$("#bonus").textContent="Start CPU: "+(10+Math.min(lvl()-1,10)+S.d.bonus)}
+$("#bGo").onclick=()=>{const C0=10+Math.min(lvl()-1,10)+S.d.bonus;S.d.bonus=0;save();
+G={T:TYPES[ty],diff:df,name:$("#vname").value||"Nightfall",own:new Set(),pts:C0,day:0,R:REG.map(r=>({n:r[0],pop:r[3],w:r[4],fw:r[4]*.5,inf:0,dead:0,aware:0})),sus:0,pat:0,patch:0,sp:1,pick:1,B:[],tab:"T",mk:{}};
+calc();build();show("game");$("#gName").textContent=G.name;news("Tap a region to deploy your virus.");render();beep(440)};
+// GAME
+function calc(){const T=G.T,c={t:.22*T.t,l:0,s:0,st:T.st,fw:0,pr:T.pr||0,x:T.x||0,g:T.g||0,au:0};
+UP.forEach(u=>{if(G.own.has(u[0]))for(const k in u[4]){c[k]+=k=="l"?u[4][k]*T.l:u[4][k]}});c.st=Math.min(.85,c.st);c.fw=Math.min(.9,c.fw);c.pr=Math.min(.8,c.pr);G.C=c}
+const LAND=["50,75 90,55 150,50 200,40 260,45 300,60 290,90 270,110 255,140 245,165 225,175 215,195 235,215 250,240 235,255 215,245 190,230 185,205 160,185 135,165 120,140 95,120 75,100 55,95","300,30 340,20 380,30 370,55 340,75 315,60","255,255 285,255 330,285 345,310 320,345 310,380 295,425 280,440 270,410 275,360 260,320 245,285","440,100 455,95 455,120 440,125","455,120 480,95 520,85 560,90 600,95 610,120 590,140 560,150 540,160 510,155 490,160 470,150 455,140","490,60 520,40 550,50 540,80 515,85 500,80","460,175 500,165 545,170 580,185 600,215 610,250 590,290 575,330 555,365 530,370 515,340 510,300 490,275 470,255 455,225 450,195","600,95 650,70 720,50 800,45 880,60 940,85 930,120 905,140 890,175 860,200 835,215 820,245 840,275 815,300 790,285 770,255 745,285 730,300 710,285 690,245 665,230 640,215 620,200 605,170 610,140","600,170 640,200 665,235 640,240 620,225 600,195","900,150 915,140 920,170 905,185","800,310 840,320 860,335 820,340 795,325","820,360 870,350 920,365 930,400 900,420 850,425 820,400"];
+function build(){$("#land").innerHTML=LAND.map(p=>`<polygon class="land" points="${p}"/>`).join("");let h="";LK.forEach(([a,b])=>h+=`<line class="lk" x1="${REG[a][1]}" y1="${REG[a][2]}" x2="${REG[b][1]}" y2="${REG[b][2]}"/>`);$("#lks").innerHTML=h;
+const g=$("#nds");g.innerHTML="";REG.forEach((r,i)=>{const e=document.createElementNS(NS,"g");e.setAttribute("class","n");e.id="n"+i;e.innerHTML=`<circle r="${10+Math.sqrt(r[3])*.7}" cx="${r[1]}" cy="${r[2]}" stroke-width="3"/><text x="${r[1]}" y="${r[2]+26+Math.sqrt(r[3])*.4}">${r[0]}</text>`;e.addEventListener("pointerdown",()=>nodeTap(i));g.append(e)});$("#bub").innerHTML=""}
+function nodeTap(i){if(!G||G.over)return;const r=G.R[i];if(G.pick){r.inf=.01;G.pick=0;news("Patient zero: "+r.n);run();render();beep(300,.2);return}
+const el=$("#info");el.style.display="block";el.innerHTML=`<b>${r.n}</b><br>Infected ${fm(r.inf)} / ${fm(r.pop)}<br>Bricked ${fm(r.dead)}<br>Firewall ${Math.round(r.fw*(1-G.C.fw)*100)}%<br>${r.aware?"⚠ Antivirus alerted":"Unaware"}`;clearTimeout(G.it);G.it=setTimeout(()=>el.style.display="none",3500)}
+function news(t){if(G)G.nw=t;$("#tk").textContent="▸ "+t}
+function run(){clearTimeout(G.tm);if(G.sp&&!G.over&&!G.pick)G.tm=setTimeout(()=>{tick();run()},1000/[0,1,2.5,5][G.sp])}
+$$("[data-s]").forEach(b=>b.onclick=()=>{if(G){G.sp=+b.dataset.s;run();beep(400+G.sp*80)}});
+$("#gMenu").onclick=()=>{if(!G)return;G.paused=G.sp||G.paused;G.sp=0;run();modal(`<h2>Paused</h2><button class="pri" onclick="closeM()">Resume</button><button id="q">Abandon run</button>`);$("#q").onclick=()=>{G.over=1;clearTimeout(G.tm);G.paused=0;closeM();menu()}};
+$("#gEvo").onclick=()=>{if(!G||G.over)return;G.paused=G.sp||1;G.sp=0;run();evo()};
+function evo(){const T={T:"Transmission",S:"Symptoms",A:"Abilities"};let h=`<div class="hud"><h2 class="mono">Evolve</h2><span class="sp"></span><b style="color:var(--ak)">⚡ ${Math.floor(G.pts)} CPU</b><button onclick="closeM()">Done</button></div><div class="chips">${Object.keys(T).map(k=>`<button class="chip ${G.tab==k?"sel":""}" data-k="${k}">${T[k]}</button>`).join("")}</div><div class="grid">`;
+UP.filter(u=>u[1]==G.tab).forEach(u=>{const o=G.own.has(u[0]);h+=`<button class="c ${o?"own":G.pts>=u[3]?"ok":""}" data-u="${u[0]}"><b>${u[2]}</b><span class="mu">${Object.keys(u[4]).map(k=>FXN[k]).join(", ")}</span><span>${o?"Owned · tap to refund":"⚡ "+u[3]}</span></button>`});
+modal(h+"</div>");$$("[data-k]").forEach(b=>b.onclick=()=>{G.tab=b.dataset.k;evo()});
+$$("[data-u]").forEach(b=>b.onclick=()=>{const u=UP.find(x=>x[0]==b.dataset.u);if(G.own.has(u[0])){G.own.delete(u[0]);G.pts+=u[3];beep(300)}else if(G.pts>=u[3]){G.pts-=u[3];G.own.add(u[0]);beep(900,.12);if(G.own.size>=12){S.f.evo=1;chk()}}else beep(150,.15);calc();evo();render()})}
+function spawn(sh){const c=G.R.map((r,i)=>i).filter(i=>sh?G.R[i].aware:G.R[i].inf>0);if(!c.length)return;const i=c[Math.random()*c.length|0],n=REG[i];
+const x=n[1]+(Math.random()-.5)*60,y=n[2]-24-Math.random()*20,e=document.createElementNS(NS,"g");e.setAttribute("class","bb"+(sh?" sh":""));e.innerHTML=`<circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y+5}">${sh?"🛡":"◆"}</text>`;
+const b={e,sh,ttl:14};e.addEventListener("pointerdown",ev=>{ev.stopPropagation();pop(b)});$("#bub").append(e);G.B.push(b);if(G.C.au&&!sh)pop(b)}
+function pop(b){if(!b.e.isConnected)return;b.e.remove();G.B=G.B.filter(x=>x!=b);if(b.sh){G.patch=Math.max(0,G.patch-1.5);news("Patch research delayed");beep(700,.1)}else{G.pts+=Math.round((2+Math.random()*3)*G.T.p);beep(1000,.05)}render()}
+function tick(){const g=G,C=g.C;g.day++;let TP=0,TI=0,TD=0;
+g.R.forEach(r=>{if(r.inf>0){const room=Math.max(0,1-(r.inf+r.dead)/r.pop);r.inf+=r.inf*C.t*.35*room*(1-r.fw*(1-C.fw))+.0005;const k=r.inf*C.l*.12;r.dead+=k;r.inf-=k;if(r.inf+r.dead>r.pop)r.inf=Math.max(0,r.pop-r.dead);
+if(!r.aware&&(r.dead>r.pop*.0005||r.inf/r.pop*(1+C.s)*(1-C.st)>.03)){r.aware=1;news(r.n+" reports strange device behavior")}}TP+=r.pop;TI+=r.inf;TD+=r.dead});
+LK.forEach(([a,b])=>[[a,b],[b,a]].forEach(([u,v])=>{const A=g.R[u],B=g.R[v];if(A.inf>0&&!B.inf&&!B.dead){const p=(.01+C.t*.06)*Math.min(1,A.inf/A.pop*20+.05)*(1+C.x*.6)*(A.aware?.5:1);if(Math.random()<p){B.inf=.01;news("Outbreak reaches "+B.n);beep(250,.1)}}}));
+if(C.x&&TI>20&&Math.random()<C.x*.02){const f=g.R.filter(r=>!r.inf&&!r.dead);if(f.length){const r=f[Math.random()*f.length|0];r.inf=.01;news("Cable hop infects "+r.n)}}
+g.sus+=(TI/TP*.5+TD/TP*3)*(1+C.s*.2)*(1-C.st)+(g.R.some(r=>r.aware)?.004:0);
+if(!g.pat&&g.sus>=1){g.pat=1;news("⚠ Antivirus labs begin writing a patch!")}
+if(g.pat){const aw=g.R.reduce((s,r)=>s+(r.aware?r.pop*(.3+r.w):0),0)/TP;const o=g.patch;g.patch+=.32*DIFF[g.diff][1]*(.3+aw)*(1-C.pr);[25,50,75].forEach(m=>{if(o<m&&g.patch>=m)news("Patch is "+m+"% complete")});spawn_sh()}
+function spawn_sh(){if(Math.random()<.18)spawn(1)}
+if(TI>0&&Math.random()<.55)spawn(0);if(C.g)g.pts+=C.g*2*g.T.p;
+g.B.forEach(b=>{if(--b.ttl<=0){b.e.remove()}});g.B=g.B.filter(b=>b.ttl>0);
+if(g.day%45==0&&Math.random()<.8){const f=UP.filter(u=>!g.own.has(u[0])&&u[3]<=22);if(f.length){const u=f[Math.random()*f.length|0];g.own.add(u[0]);calc();news("🧬 Random mutation: "+u[2]);beep(1200,.2)}}
+render();
+if(g.R.every(r=>r.inf>0||r.dead>0))S.f.all=1;
+if(TD>=TP*.995)return end(1);if(g.patch>=100)return end(0,"The patch shipped. Your virus was wiped.");if(TI<=.001&&TD<TP*.995)return end(0,"Your virus ran out of devices to infect.")}
+function render(){const g=G;if(!g)return;let TP=0,TI=0,TD=0;g.R.forEach((r,i)=>{TP+=r.pop;TI+=r.inf;TD+=r.dead;const e=$("#n"+i).firstChild,v=Math.min(1,(r.inf+r.dead)/r.pop*1.3);
+e.style.fill=r.inf+r.dead>0?`hsl(${170-170*v} 80% ${r.dead>r.pop*.9?18:48}%)`:"color-mix(in srgb,var(--mu) 35%,var(--bg))";e.style.stroke=r.aware?"var(--wn)":"var(--ln)";e.setAttribute("class",r.aware?"aw":"")});
+$("#gDay").textContent="Day "+g.day;$("#gPts").textContent="⚡ "+Math.floor(g.pts);$("#fI").textContent=fm(TI);$("#fD").textContent=fm(TD);$("#fP").textContent=g.pat?Math.floor(g.patch)+"%":"not started";
+$("#bI").style.width=TI/TP*100+"%";$("#bD").style.width=TD/TP*100+"%";$("#bP").style.width=g.patch+"%"}
+function end(win,why){G.over=1;clearTimeout(G.tm);const m=DIFF[G.diff][1],xp=win?Math.round(60*m+30):15+Math.min(30,Math.floor(G.day/10));
+S.games++;S.xp+=xp;if(win){S.wins++;if(G.diff==2)S.f.b=1;if(G.day<250)S.f.fast=1}chk();save();beep(win?1200:140,.4);
+modal(`<h2 style="color:${win?"var(--ak)":"var(--wn)"}">${win?"Total system collapse":"Run failed"}</h2><div>${win?"Every device on Earth is bricked. You win.":why}</div><div class="mu">Day ${G.day} · +${xp} XP</div><button class="pri" id="rt">Try a new strain</button><button id="mm">Main menu</button>`);
+$("#rt").onclick=()=>{closeM();G=null;show("setup");setup()};$("#mm").onclick=()=>{closeM();G=null;menu()}}
+// BACKGROUND RAIN
+(()=>{const c=$("#bg"),x=c.getContext("2d");let w,h,d;const rs=()=>{w=c.width=innerWidth;h=c.height=innerHeight;d=Array(Math.ceil(w/18)).fill(0).map(()=>Math.random()*h/16)};rs();addEventListener("resize",rs);
+setInterval(()=>{if(!$("#menu").classList.contains("on")&&!$("#setup").classList.contains("on"))return;x.fillStyle="rgba(10,7,20,.15)";x.fillRect(0,0,w,h);x.fillStyle=getComputedStyle(document.body).getPropertyValue("--ac")||"#f38";x.font="14px monospace";
+d.forEach((y,i)=>{x.fillText(Math.random()<.5?"0":"1",i*18,y*16);d[i]=y*16>h&&Math.random()>.975?0:y+1})},80)})();
+document.body.dataset.th=S.th;chk();menu();
+</script>
+<script>
+/* ===== v3: real-shaped map, 16 viruses, genes, scenarios, climate, more ===== */
+const P=(a,b)=>[(a+180)*2.7778,(84-b)*2.7778],has=i=>(S.gn||[]).includes(i);
+document.head.insertAdjacentHTML("beforeend","<style>.hero{display:grid;gap:.5em;position:relative;align-content:center}.hero h1,.hero .sub,#bPlay{grid-column:1/-1}.hero button{max-width:none;font-size:1.05rem}#bPlay{font-size:1.4rem}.types{display:grid;grid-template-columns:repeat(auto-fill,minmax(8em,1fr));align-content:start;overflow-y:auto;overflow-x:hidden}.ty{min-width:0}.ty .mu{font-size:.75em}.n text{font-size:8px}.sea{fill:#2c6fb0;stroke:none}.bb text{font-size:14px}.bb{animation:bbin .35s ease-out both;transform-box:fill-box;transform-origin:center}@keyframes bbin{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}@keyframes bbout{to{opacity:0}}</style>");
+$("#map").setAttribute("viewBox","0 0 1000 392");
+const SEAS=[[28,41.5,28.5,44,30,46,33,46,35,45,38,47,40,43.5,41.5,41.5,36,41.5,32,41.8],[47,45,50,46,53,45,53,41,54,38,50,37,49,40,47,43]];
+LAND.length=0;LAND.push(
+[-168,66,-162,70,-156,71,-141,70,-128,70,-115,68,-108,68,-95,72,-90,69,-82,69,-82,66,-88,64,-93,61,-94,59,-90,57,-82,55,-79,52,-79,57,-77,62,-72,61,-65,60,-62,57,-56,52,-60,50,-66,50,-71,47,-65,48,-64,46,-61,45,-66,44,-70,43,-70,41.7,-74,40.5,-76,37,-76,35,-81,31,-80,26,-82,26,-83,29,-85,30,-89,30,-94,29.5,-97,27,-97.5,22,-95,19,-91,18.5,-90,21,-87,21.5,-88,16,-84,15.5,-83,11,-80,9,-77.5,8.5,-79,7.5,-82,8,-86,11,-88,13,-92,14.5,-96,15.7,-105,19.5,-106,23.5,-109,26,-112,29,-114.7,31.7,-117,32.5,-120,34.5,-122,37.5,-124,40.5,-124,46,-124.5,48.3,-123,49.5,-128,51,-131,54,-135,57,-140,59.8,-148,60.5,-152,58.5,-158,56.5,-164,54.7,-160,58.5,-162,60,-165,62,-166,64],
+[-73,78,-60,82,-30,83.5,-20,81,-18,76,-21,70,-27,68.5,-40,65,-43,60,-50,62,-54,67,-56,72,-66,76],
+[-80,73,-70,70,-62,66,-65,63,-72,64,-78,65,-88,70],[-120,72,-105,73,-100,70,-115,69],[-90,76,-75,78,-65,82,-85,82.5,-95,80],
+[-77.5,8.5,-72,12,-65,10.5,-60,8.5,-52,5,-50,0,-44,-2.5,-35,-5.5,-35,-9,-39,-14,-39,-18,-41,-22,-45,-23.5,-48.5,-26,-49,-29,-53,-34,-57,-35,-57,-38,-62,-39,-65,-41,-64,-45,-67,-47,-66,-50,-69,-52,-68.5,-55,-72,-54,-74,-50,-75,-46,-73.5,-40,-73,-35,-71.5,-30,-70.5,-22,-70.3,-18,-76,-14,-79,-8,-81,-5,-80,-2,-80,1,-78,2,-77,7],
+[-9,37,-9,43,-2,43.5,-1.5,46,-4.5,48.5,-1.5,48.7,2,51,4.5,52.5,8,54,8.5,57,10.5,57.5,10,55,12,54.3,14,54,19,54.5,21,57,24,57.5,24.5,59.5,30,60,23,60,21.5,61.5,21,65,25,65.5,22,65.8,17.5,62.5,18.5,60,16.5,57,14,55.5,12.5,56,11,59,8,58,5,59,5,62,10,64,14,67,19,70,25,71,31,70,41,67,33,66.5,41,66,44,68,54,68.5,60,69,68,69,70,73,80,73,87,75,100,77,108,76.5,113,74,128,72,140,72.5,150,71,160,69.5,170,70,180,69,180,65,172,64.5,170,60,163,60,163,57,156,51,156,57.5,160,61,150,59,142,59,137,54,141,53,140,48,135,43,131,42.5,129.5,40.5,128,38.5,129.5,35.5,126.5,34.5,126.5,37.5,125,39.5,121.5,39,122,37,119,37,121,34,120,31,122,30,120,27,117,23.5,113,22,110,21,108,21.5,106,19,109,15,109,12,106,9,105,8.7,104,10.5,100,13.5,99.5,10,100.5,7,103,5,104,1.5,101,2.5,98.5,8,98,14,97,17,94,16,94,19.5,92,21,90,22,87,21.5,85,19.5,80,15.5,80,10,77.5,8,76,10,73,17,72.5,21,70,21,68,23.5,66,25,61.5,25.2,57,25.8,56.4,27,52,27.6,50,30,48,30,50,26,51.5,24.5,54,24,56,26,56.5,24.5,58.5,23.5,59.8,22.4,57.5,19,52,16.5,45,13,43.5,12.7,42.8,15,39,21,35,28,34.9,29.5,34.3,31.3,35.1,33,36,35.5,36.1,36.6,34,36.2,32,36.3,30,36.3,28,36.8,27,37.7,26.5,39.5,26,40.2,24,40.5,23,39.5,24,38,22.8,36.5,21.5,37,21,39,19.5,40.5,19,42,16.5,43.5,14,45,13.7,45.6,12.3,45.3,12.5,44.3,14,42.5,16,41.5,18.5,40.2,16.5,38.8,15.6,38,16,39,15.5,40,13,41.2,10.5,43,8.8,44.4,7,43.6,3.5,43.3,3,42,0.3,40,-0.5,38.5,-2,36.8,-5.5,36],
+[-17,21,-16,24,-13,28,-9.5,30,-9.8,32,-6,35.8,-2,35,3,36.8,10,37.2,11,35,10,33.5,15,32.3,20,32.2,20,30.5,24,32,29,31,32,31.2,32.5,29.8,34,27,36,22.5,37.5,18,39,15.5,43,12.5,44,10.5,51,12,51.2,10.5,48,5,45,2,41,-1.5,39.5,-5,39,-8,40.5,-11,40.5,-15,35,-19.5,35.5,-24,33,-26,32.5,-28.5,31,-30,28,-33,25,-34,20,-34.8,18.4,-34,17.8,-31,15.2,-27,14.5,-22,11.8,-17,13.5,-12,12.5,-6,9,-1,9.5,3.5,8.5,4.5,5,6,1.5,6,-2,4.8,-7.5,4.4,-11,6.8,-13,9,-15,11.5,-17,14.7,-16.5,19],
+[113.5,-22,114,-26,115,-34,118,-35,123.5,-34,129,-31.5,134,-32.8,137.5,-35,140,-38,144,-38.3,146.5,-39,150,-37.5,153,-31,153.5,-27,150,-22.5,146,-18.8,145.3,-15,143.5,-14,142.5,-10.7,141.5,-13,141,-17,139.5,-17.5,136,-15,137,-12,132,-11.3,130,-12.5,129,-15,126,-14,122,-17,121,-19.5,117,-20.7],
+[-5.5,50,1.5,51,1.7,52.8,-.5,54.5,-2,56,-2,57.7,-5,58.6,-6,56.5,-5,55,-3,54.5,-4.5,53,-4.8,51.6],[-10,52,-6,52.2,-6,54.5,-8,55.2,-10,54],[-24,65,-22,66.4,-15,66.3,-13.5,65,-18,63.4,-22.5,63.8],
+[130.9,34,133,35.5,136,36,137,37.5,140,40,141.5,41,142,39,141,36,140,35,138,34.7,135.5,33.5,133,34],[140,42,141,45.4,145,43.3,143,42,141,42],[129.7,33,131.8,33.5,131.5,31,130.2,31.3],[142,46,143.5,49,143,54,142.5,53],[120.2,23,121.8,25,121.5,22.5],[108.7,19,110.5,20,111,19.6,109.5,18.2],[79.8,6,81.8,7.5,80.3,9.7,79.8,8],
+[95.3,5.6,98,4,104,-1,106,-3,105.8,-5.8,102,-4,98.5,.5],[105.2,-6.5,111,-6.5,114.5,-7.8,110,-8.2,106,-7.4],[109,1.5,111,2,114,4.5,117,7,119,5,118,1,116.5,-3.5,114.5,-4,110.5,-3,109.3,-1.5],[119,-3.5,119.8,.5,124.5,1.2,121,-1,123,-4.5,121.5,-4.8,120,-5.5],[131,-1,135,-3.3,138,-1.8,145,-4.5,147.5,-6,150.5,-10.5,147,-9,143,-9,141,-9,138,-8,134,-4],[120,18.5,122,18.4,121.5,14,124,13,122,14,120.5,14.5,120,16],[122,7,126.5,7.5,126,6,123,6.5],
+[49.3,-12,50.5,-15,47,-25,44,-24.5,43.5,-21,44.5,-16,48,-13.5],[172.7,-34.5,176,-37.5,178.5,-37.7,175,-41.5,174.5,-39.5,173,-35.5],[172.7,-40.5,174,-41.5,171,-44.5,169,-46.5,167,-46,170,-43.5],[144.7,-40.8,148.3,-41,147,-43.5,145.5,-42.5],
+[-85,22,-82,23,-77,21.5,-74.2,20.2,-77.5,19.8,-81,22.3],[-74.4,18.5,-72,19.9,-68.4,18.6,-71.5,17.7],[52,71,56,73.5,68,77,60,75,55,71],[11,78.5,18,80,27,80,22,77.5,15,77]);
+// 27 regions: name, lon, lat, devices(M), wealth, climate
+REG.length=0;REG.push(["Canada",-100,56,40,.9,"cold"],["US West",-115,38,100,.9,"arid"],["US East",-85,38,230,.9,"temp"],["Mexico",-101,24,130,.45,"arid"],["Central America",-85,14,90,.3,"humid"],["Andean North",-70,5,150,.4,"humid"],["Brazil",-52,-10,215,.5,"humid"],["Southern Cone",-65,-33,110,.5,"temp"],["Greenland",-42,73,.06,.7,"cold"],["UK & Ireland",-3,54,70,.9,"temp"],["Western Europe",3,47,230,.9,"temp"],["Nordics",16,63,27,.9,"cold"],["Eastern Europe",24,50,190,.6,"temp"],["Russia",75,60,145,.55,"cold"],["North Africa",10,28,250,.35,"arid"],["West Africa",0,9,430,.2,"humid"],["East Africa",30,2,500,.15,"humid"],["Southern Africa",24,-24,150,.3,"arid"],["Middle East",45,28,330,.5,"arid"],["Central Asia",65,42,90,.3,"arid"],["India",78,22,1400,.3,"hot"],["China",105,34,1400,.6,"temp"],["Japan/Korea",131,36,200,.9,"temp"],["Southeast Asia",105,14,600,.3,"humid"],["Indonesia/Phil.",120,-2,380,.35,"humid"],["Australia",134,-25,30,.9,"arid"],["NZ & Pacific",172,-41,8,.9,"temp"]);
+REG.forEach(r=>{[r.x,r.y]=P(r[1],r[2])});
+LK.length=0;REG.forEach((a,i)=>REG.map((b,j)=>[j,Math.hypot(a.x-b.x,a.y-b.y)]).filter(x=>x[0]!=i).sort((p,q)=>p[1]-q[1]).slice(0,3).forEach(([j,d])=>{if(d<150&&!LK.some(l=>l[0]==j&&l[1]==i||l[0]==i&&l[1]==j))LK.push([i,j])}));
+DIFF.length=0;DIFF.push(["Casual",.6],["Normal",1],["Brutal",1.5],["Mega Brutal",2.2]);
+TYPES.length=0;TYPES.push({n:"Trojan",i:"🐴",d:"Balanced. Hides inside useful apps.",t:1,l:1,st:.05,p:1},{n:"Worm",i:"🪱",d:"Spreads fast, but noisy.",t:1.3,l:1,st:-.05,p:1},{n:"Rootkit",i:"🕳",d:"Slow spreader, deeply hidden.",t:.8,l:1,st:.25,p:1},{n:"Spyware",i:"👁",d:"Stealthy. Extra CPU from bubbles.",t:.9,l:.9,st:.2,p:1.6},{n:"Logic Bomb",i:"💣",d:"Harmless until 35% infected, then it detonates.",t:.9,l:1.5,st:.2,p:1,arm:1},{n:"Ransomware",i:"🔒",d:"Devices brick faster.",t:.9,l:1.5,st:0,p:1},{n:"Cryptojacker",i:"₿",d:"Mines coins. Big CPU income, low lethality.",t:1,l:.7,st:.15,p:2,g:1},{n:"Botnet",i:"🕸",d:"Jumps oceans easily.",t:1,l:1,st:0,p:1,x:.4},{n:"Zero-Day",i:"⚡",d:"Patch research runs slower.",t:1.05,l:1,st:.05,p:1,pr:.2},{n:"Nano-Virus",i:"🔬",d:"Patch lab can’t start until the world is very suspicious.",t:1,l:1,st:.1,p:1,nano:1},{n:"Lazarus",i:"☠",d:"Bricked devices rise again as zombie nodes. Win by zombifying the world.",t:1.1,l:1.2,st:0,p:1,rez:1},{n:"Neurax Worm",i:"🧠",d:"Mind control: bubbles collect themselves.",t:1,l:1,st:.05,p:1.3,au:1},{n:"Skynet AI",i:"🤖",d:"Self-evolving. Frequent free mutations.",t:1,l:1,st:.15,p:1,mut:18},{n:"Polymorph",i:"🧬",d:"Mutates every 12 days.",t:1,l:1,st:.1,p:1,mut:12},{n:"Cyberweapon",i:"☢",d:"Patch starts at once, but brutal lethality. Symptoms cheaper.",t:1.1,l:1.8,st:0,p:1,pat0:1,disc:1,pr:.1},{n:"Phantom",i:"👻",d:"Nearly invisible, slow growth.",t:.8,l:.8,st:.3,p:1.2});
+UP.length=0;"email|T|Phishing Email|6|t.1;usb|T|USB Drop|4|t.07;wifi|T|Wi-Fi Sniffing|8|t.12;bt|T|Bluetooth Hop|7|t.09;p2p|T|P2P Torrents|10|t.15;cloud|T|Cloud Sync|14|t.2;iot|T|IoT Botnet|16|t.18;tv|T|Smart TV Exploit|12|t.14;sup|T|Supply-Chain Attack|22|t.25;cable|T|Undersea Cable Hop|16|x1 t.05;sat|T|Satellite Uplink|18|x1 t.05;zc|T|Zero-Click Exploit|26|t.3;pop|S|Pop-up Ads|3|s1 t.03;lag|S|System Lag|4|s1 t.02;batt|S|Battery Drain|5|s2 t.04;fake|S|Fake Alerts|6|s2;key|S|Keylogger|9|s2 g1;theft|S|Data Theft|10|s3 g1;cam|S|Webcam Hijack|13|s3 g1;miner|S|Hidden Miner|8|g1 s1;gpu|S|GPU Hijack|16|g2 s3;wallet|S|Wallet Stealer|24|g3 s4;lock|S|Screen Lock|12|s4 l.02;corr|S|File Corruption|16|s5 l.04;heat|S|Overheat Hardware|18|s5 l.05;crypt|S|Disk Encryption|22|s6 l.07;brick|S|Firmware Brick|30|s8 l.13;wipe|S|Total Wipe|36|s9 l.17;panic|S|Kernel Panic|42|s10 l.22;obf|A|Code Obfuscation|6|st.12;poly|A|Polymorphic Engine|14|st.18;root|A|Rootkit|22|st.25;ai|A|AI Evasion|32|st.3;tor|A|Tor C2 Server|14|st.15;mix|A|Coin Mixer|20|st.2 g1;fw|A|Firewall Bypass|10|fw.3;ofl|A|Offline Persistence|12|fw.2;sbx|A|Sandbox Escape|18|fw.25;av1|A|Antivirus Resistance I|14|pr.15;av2|A|Antivirus Resistance II|24|pr.2;av3|A|Antivirus Resistance III|36|pr.3;gen|A|Genetic Hardening|28|pr.25;auto|A|Auto-Harvest|20|au1;cold|A|Cold-Boot Hardening|8|cold1;hot|A|Thermal Immunity|8|hot1;arid|A|Dust-Proof Firmware|8|arid1;humid|A|Moisture Coating|8|humid1".split(";").forEach(s=>{const a=s.split("|"),f={};a[4].split(" ").forEach(z=>{const m=z.match(/^([a-z]+)(.+)$/);f[m[1]]=+m[2]});UP.push([a[0],a[1],a[2],+a[3],f])});
+Object.assign(FXN,{cold:"Cold regions",hot:"Hot regions",arid:"Arid regions",humid:"Humid regions",bub:"Bubble CPU",disc:"Discount"});
+const GN=[["head","Head Start","+15 starting CPU",3,{}],["spr","Overclock","+spread",4,{t:.03}],["stl","Ghost Protocol","+8% stealth",4,{st:.08}],["cheap","Cheap Code","Upgrades 10% cheaper",5,{disc:.1}],["sab","Saboteur","+10% patch resistance",5,{pr:.1}],["greed","Greedy Bubbles","+30% bubble CPU",3,{bub:.3}],["bd","Backdoor","+10% firewall bypass",4,{fw:.1}],["pay","Payload","+lethality",4,{l:.02}]];
+const SC=[["WannaCry","Ransomware tears through Eastern Europe.","Ransomware",12,1],["Stuxnet","A cyberweapon launched in the Middle East.","Cyberweapon",18,2],["Mirai","An IoT botnet awakens in the US.","Botnet",2,1],["Conficker","A worm nobody can remove.","Worm",12,2],["Y2K Bug","A logic bomb sleeping in the US.","Logic Bomb",2,1],["Lazarus Group","The dead rise from Korea.","Lazarus",22,2],["Skynet Awakens","A self-aware AI on the US West Coast.","Skynet AI",1,3],["Bitcoin Rush","Cryptojacking from the Nordics.","Cryptojacker",11,1]];
+ACH.push(["Zombie Apocalypse","Win with Lazarus",s=>s.f.laz],["Ghost","Win before the patch starts",s=>s.f.ghost],["Mega Brutal","Win on Mega Brutal",s=>s.f.mb],["Geneticist","Own 3 genes",s=>(s.gn||[]).length>=3]);
+const FL=["Stocks dip as IT departments panic","Experts urge people to unplug everything","Hacker forums debate your code","World leaders hold emergency summit","Your virus is trending online","Help desks overwhelmed worldwide"];
+// menu additions
+$("#bAch").insertAdjacentHTML("afterend",'<button id="bGen">🧪 Genes <span class="bdg" id="gp" style="animation:none"></span></button><button id="bHow">❓ How to play</button>');
+const om=menu;menu=function(){om();$("#gp").textContent=S.gp||0};
+$("#bHow").onclick=()=>modal(`<h2>How to play</h2><div>1. Pick a virus and tap a region to deploy it.<br>2. Tap ◆ bubbles for CPU. Tap 🛡 bubbles to slow the patch.<br>3. Press 🧬 Evolve: Transmission spreads you, Symptoms hurt devices, Abilities hide you.<br>4. Severity makes the world notice. Regions then close borders and the antivirus labs build a patch.<br>5. Brick every device before the patch hits 100%.<br>6. Climate matters: buy hardening for cold, hot, arid and humid regions. Earn Genes after every run.</div><button onclick="closeM()">Got it</button>`);
+$("#bGen").onclick=()=>{S.gn=S.gn||[];modal(`<h2>Genes</h2><div class="mu">Permanent perks. You have <b>${S.gp||0}</b> gene points (earned every run, more for long runs and wins).</div><div class="grid">`+GN.map(g=>`<button class="c ${has(g[0])?"own":(S.gp||0)>=g[3]?"ok":""}" data-g="${g[0]}"><b>${g[1]}</b><span class="mu">${g[2]}</span><span>${has(g[0])?"Owned":"🧬 "+g[3]}</span></button>`).join("")+`</div><button onclick="closeM()">Close</button>`);$$("[data-g]").forEach(b=>b.onclick=()=>{const g=GN.find(x=>x[0]==b.dataset.g);if(!has(g[0])&&(S.gp||0)>=g[3]){S.gp-=g[3];S.gn.push(g[0]);chk();save()}$("#bGen").click();menu()})};
+// setup
+$("#bonus").insertAdjacentHTML("beforebegin",'<div class="mu">Scenarios (instant start)</div><div class="chips" id="scs"></div>');
+function setup(){const T=TYPES[ty];$("#types").innerHTML=TYPES.map((t,i)=>`<button class="card ty ${i==ty?"sel":""}" data-i="${i}"><big>${t.i}</big><b>${t.n}</b><span class="mu">${t.d}</span></button>`).join("");$$(".ty").forEach(b=>b.onclick=()=>{ty=+b.dataset.i;setup()});
+$("#tdesc").innerHTML=`<b>${T.i} ${T.n}</b><div class="mu">${T.d}</div>`;$("#diffs").innerHTML=DIFF.map((d,i)=>`<button class="chip ${i==df?"sel":""}" data-d="${i}">${d[0]}</button>`).join("");$$("[data-d]").forEach(b=>b.onclick=()=>{df=+b.dataset.d;setup()});
+$("#scs").innerHTML=SC.map((s,i)=>`<button class="chip" data-c="${i}" title="${s[1]}">${s[0]}</button>`).join("");$$("[data-c]").forEach(b=>b.onclick=()=>{const s=SC[+b.dataset.c];ty=TYPES.findIndex(t=>t.n==s[2]);df=s[4];$("#vname").value=s[0];start(s[3])});
+$("#bonus").textContent="Start CPU: "+(10+Math.min(lvl()-1,10)+S.d.bonus+(has("head")?15:0))}
+$("#bGo").onclick=()=>start();
+function start(org){const C0=10+Math.min(lvl()-1,10)+S.d.bonus+(has("head")?15:0);S.d.bonus=0;save();
+G={T:TYPES[ty],diff:df,name:$("#vname").value||"Nightfall",own:new Set(),paid:{},pts:C0,day:0,R:REG.map(r=>({n:r[0],x:r.x,y:r.y,pop:r[3],w:r[4],env:r[5],fw:r[4]*.5,inf:0,dead:0,aware:0,cl:0})),sus:0,pat:0,patch:0,sp:1,pick:1,B:[],tab:"T",armed:0};
+if(G.T.pat0){G.sus=1;G.pat=1}calc();build();show("game");$("#gName").textContent=G.name;render();if(org!=null)deploy(org);else news("Tap a region to deploy your virus.")}
+function deploy(i){const r=G.R[i];r.inf=.01;G.pick=0;news("Patient zero: "+r.n);run();render()}
+function calc(){const T=G.T,c={t:.22*T.t,l:0,s:0,st:T.st,fw:0,pr:T.pr||0,x:T.x||0,g:T.g||0,au:T.au||0,cold:0,hot:0,arid:0,humid:0,disc:0,bub:0};
+(S.gn||[]).forEach(id=>{const g=GN.find(x=>x[0]==id);for(const k in g[4])c[k]+=g[4][k]});UP.forEach(u=>{if(G.own.has(u[0]))for(const k in u[4])c[k]+=k=="l"?u[4][k]*T.l:u[4][k]});
+c.st=Math.min(.85,c.st);c.fw=Math.min(.9,c.fw);c.pr=Math.min(.8,c.pr);if(T.arm&&!G.armed)c.l=0;G.C=c}
+function build(){const pts=LAND.map(p=>{let s="";for(let i=0;i<p.length;i+=2)s+=P(p[i],p[i+1]).map(v=>v.toFixed(0))+" ";return s});
+$("#land").innerHTML=`<defs><clipPath id="lc">${pts.map(s=>`<polygon points="${s}"/>`).join("")}</clipPath><filter id="bl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="8"/></filter></defs>`+pts.map(s=>`<polygon class="land" points="${s}"/>`).join("")+`<g clip-path="url(#lc)"><g id="heat" filter="url(#bl)">${REG.map((r,i)=>`<circle id="h${i}" cx="${r.x}" cy="${r.y}" r="${26+Math.sqrt(r[3])*.6}" fill="none" opacity="0"/>`).join("")}</g></g>`+SEAS.map(s=>{let q="";for(let i=0;i<s.length;i+=2)q+=P(s[i],s[i+1]).map(v=>v.toFixed(0))+" ";return `<polygon class="sea" points="${q}"/>`}).join("");
+let h="";LK.forEach(([a,b])=>h+=`<line class="lk" x1="${REG[a].x}" y1="${REG[a].y}" x2="${REG[b].x}" y2="${REG[b].y}"/>`);$("#lks").innerHTML=h;
+const g=$("#nds");g.innerHTML="";REG.forEach((r,i)=>{const e=document.createElementNS(NS,"g");e.setAttribute("class","n");e.id="n"+i;e.innerHTML=`<circle r="15" cx="${r.x}" cy="${r.y}" style="stroke:none;fill:transparent"/><circle r="4.5" cx="${r.x}" cy="${r.y}" stroke-width="1.5"/><text x="${r.x}" y="${r.y+13}">${r[0]}</text>`;e.addEventListener("pointerdown",()=>nodeTap(i));g.append(e)});$("#bub").innerHTML=""}
+function nodeTap(i){if(!G||G.over)return;if(G.pick){deploy(i);return}const r=G.R[i],el=$("#info");el.style.display="block";el.innerHTML=`<b>${r.n}</b> · ${r.env}<br>Infected ${fm(r.inf)} / ${fm(r.pop)}<br>Bricked ${fm(r.dead)}<br>Firewall ${Math.round(r.fw*(1-G.C.fw)*100)}%<br>${r.cl?"✈⚓ Borders closed":r.aware?"⚠ Antivirus alerted":"Unaware"}`;clearTimeout(G.it);G.it=setTimeout(()=>el.style.display="none",3500)}
+let LPOLY;function inLand(x,y){LPOLY=LPOLY||LAND.map(p=>{const a=[];for(let i=0;i<p.length;i+=2)a.push(P(p[i],p[i+1]));return a});return LPOLY.some(a=>{let o=false;for(let i=0,j=a.length-1;i<a.length;j=i++){if((a[i][1]>y)!=(a[j][1]>y)&&x<(a[j][0]-a[i][0])*(y-a[i][1])/(a[j][1]-a[i][1])+a[i][0])o=!o}return o})}
+function bpos(r){const R=22+Math.sqrt(r.pop)*.7;let x=r.x,y=r.y;for(let k=0;k<40;k++){const a=Math.random()*6.283,d=Math.sqrt(Math.random())*R,px=r.x+Math.cos(a)*d,py=r.y+Math.sin(a)*d;if(inLand(px,py)){x=px;y=py;break}}return[x,y]}
+function spawn(sh){const c=G.R.map((r,i)=>i).filter(i=>sh?G.R[i].aware:G.R[i].inf>0);if(!c.length)return;const w=c.map(i=>Math.sqrt(G.R[i].pop)+1);let q=Math.random()*w.reduce((a,b)=>a+b,0),k=0;while(q>w[k]&&k<w.length-1){q-=w[k];k++}const r=G.R[c[k]],[x,y]=bpos(r),e=document.createElementNS(NS,"g");e.setAttribute("class","bb"+(sh?" sh":""));e.innerHTML=`<circle cx="${x}" cy="${y}" r="13"/><text x="${x}" y="${y+5}">${sh?"🛡":"◆"}</text>`;const b={e,sh,ttl:14};e.addEventListener("pointerdown",ev=>{ev.stopPropagation();pop(b)});$("#bub").append(e);G.B.push(b);if(G.C.au&&!sh)pop(b)}
+function pop(b){if(!b.e.isConnected)return;b.e.remove();G.B=G.B.filter(x=>x!=b);if(b.sh){G.patch=Math.max(0,G.patch-1.5);news("Patch research delayed")}else G.pts+=Math.round((2+Math.random()*3)*G.T.p*(1+G.C.bub));render()}
+function tick(){const g=G,C=g.C,T=g.T;g.day++;let TP=0,TI=0,TD=0;g.R.forEach(r=>{TP+=r.pop;TI+=r.inf;TD+=r.dead});
+if(T.arm&&!g.armed&&TI/TP>=.35){g.armed=1;calc();news("💣 LOGIC BOMB ARMED: payload active!")}
+g.R.forEach(r=>{if(r.inf>0){const em=r.env=="temp"?1:C[r.env]?1.15:.7,room=Math.max(0,1-(r.inf+r.dead)/r.pop);r.inf+=r.inf*C.t*.5*em*room*(1-r.fw*(1-C.fw))+.0005;const k=r.inf*C.l*.12;r.dead+=k;r.inf-=k;
+if(T.rez&&r.dead>0){const z=r.dead*.03;r.dead-=z;r.inf+=z}if(r.inf+r.dead>r.pop)r.inf=Math.max(0,r.pop-r.dead);
+if(!r.aware&&(r.dead>r.pop*.0005||r.inf/r.pop*(1+C.s)*(1-C.st)>.03)){r.aware=1;news(r.n+" detects strange activity")}
+if(r.aware&&!r.cl&&r.w>.5&&g.pat&&Math.random()<.03){r.cl=1;news(r.n+" closes its borders and ports ✈⚓")}}});
+LK.forEach(([a,b])=>[[a,b],[b,a]].forEach(([u,v])=>{const A=g.R[u],B=g.R[v];if(A.inf>0&&!B.inf&&!B.dead){const p=(.01+C.t*.06)*Math.min(1,A.inf/A.pop*20+.05)*(1+C.x*.6)*(A.aware?.5:1)*(A.cl||B.cl?.3:1);if(Math.random()<p){B.inf=.01;news("Outbreak reaches "+B.n);spawn(0)}}}));
+if(C.x&&TI>20&&Math.random()<C.x*.02){const f=g.R.filter(r=>!r.inf&&!r.dead&&!r.cl);if(f.length){const r=f[Math.random()*f.length|0];r.inf=.01;news("Long-haul link infects "+r.n)}}
+g.sus+=(TI/TP*.5+TD/TP*3)*(1+C.s*.2)*(1-C.st)+(g.R.some(r=>r.aware)?.004:0);
+if(!g.pat&&g.sus>=(T.nano?2.5:1)){g.pat=1;news("⚠ Antivirus labs begin writing a patch!")}
+if(g.pat){const aw=g.R.reduce((s,r)=>s+(r.aware?r.pop*(.3+r.w):0),0)/TP,o=g.patch;g.patch+=.4*DIFF[g.diff][1]*(.25+aw+TI/TP*.8)*(1-C.pr);[25,50,75].forEach(m=>{if(o<m&&g.patch>=m)news("Patch is "+m+"% complete")});if(Math.random()<.18)spawn(1)}
+if(TI>0&&Math.random()<.55)spawn(0);if(C.g)g.pts+=C.g*2*T.p;g.B.forEach(b=>{if(--b.ttl<=0)b.e.remove();else if(b.ttl==3)b.e.style.animation="bbout "+(3000/[1,1,2.5,5][g.sp||1])+"ms linear forwards"});g.B=g.B.filter(b=>b.ttl>0);
+if(g.day%12==0&&Math.random()<.5)news(FL[Math.random()*FL.length|0]);
+if(g.day%(T.mut||45)==0&&Math.random()<.8){const f=UP.filter(u=>!g.own.has(u[0])&&u[3]<=(T.mut?40:22));if(f.length){const u=f[Math.random()*f.length|0];g.own.add(u[0]);calc();news("🧬 Random mutation: "+u[2])}}
+render();if(g.R.every(r=>r.inf>0||r.dead>0))S.f.all=1;
+if(T.rez?(TD+TI>=TP*.995&&TD>=TP*.4):TD>=TP*.97)return end(1);if(g.patch>=100)return end(0,"The patch shipped. Your virus was wiped.");if(TI<=.001)return end(0,"Your virus ran out of devices to infect.")}
+function render(){const g=G;if(!g)return;let TP=0,TI=0,TD=0;g.R.forEach((r,i)=>{TP+=r.pop;TI+=r.inf;TD+=r.dead;const v=Math.min(1,(r.inf+r.dead)/r.pop*1.3),h=$("#h"+i),d=$("#n"+i).children[1];
+h.setAttribute("fill",`hsl(${55-55*v} 95% ${52-22*v}%)`);h.setAttribute("opacity",r.inf+r.dead>0?Math.min(.95,.4+v):0);d.style.fill=r.dead>r.pop*.9?"#222":r.inf>0?"#ff3b3b":"#fff";d.style.stroke=r.cl?"#38bdf8":r.aware?"#ffb020":"#000";d.setAttribute("r",r.aware?6:4.5)});
+$("#gDay").textContent="Day "+g.day;$("#gPts").textContent="⚡ "+Math.floor(g.pts);$("#fI").textContent=fm(TI);$("#fD").textContent=fm(TD);$("#fP").textContent=g.pat?Math.floor(g.patch)+"%":"not started";$("#bI").style.width=TI/TP*100+"%";$("#bD").style.width=TD/TP*100+"%";$("#bP").style.width=g.patch+"%"}
+function evo(){const C=G.C,T={T:"Transmission",S:"Symptoms",A:"Abilities"},cs=u=>Math.max(1,Math.round(u[3]*(1-C.disc)*(G.T.disc&&u[1]=="S"?.75:1)));
+let h=`<div class="hud"><h2 class="mono">Evolve</h2><span class="sp"></span><b style="color:var(--ak)">⚡ ${Math.floor(G.pts)}</b><button onclick="closeM()">Done</button></div><div class="mu">Spread ${C.t*100|0} · Severity ${C.s} · Lethality ${C.l*100|0} · Stealth ${C.st*100|0}% · Patch resist ${C.pr*100|0}%</div><div class="chips">${Object.keys(T).map(k=>`<button class="chip ${G.tab==k?"sel":""}" data-k="${k}">${T[k]}</button>`).join("")}</div><div class="grid">`;
+UP.filter(u=>u[1]==G.tab).forEach(u=>{const o=G.own.has(u[0]);h+=`<button class="c ${o?"own":G.pts>=cs(u)?"ok":""}" data-u="${u[0]}"><b>${u[2]}</b><span class="mu">${Object.keys(u[4]).map(k=>FXN[k]).join(", ")}</span><span>${o?"Owned · tap to refund":"⚡ "+cs(u)}</span></button>`});
+modal(h+"</div>");$$("[data-k]").forEach(b=>b.onclick=()=>{G.tab=b.dataset.k;evo()});
+$$("[data-u]").forEach(b=>b.onclick=()=>{const u=UP.find(x=>x[0]==b.dataset.u);if(G.own.has(u[0])){G.own.delete(u[0]);G.pts+=G.paid[u[0]]||0}else if(G.pts>=cs(u)){G.paid[u[0]]=cs(u);G.pts-=cs(u);G.own.add(u[0]);if(G.own.size>=12){S.f.evo=1;chk()}}calc();evo();render()})}
+$("#gEvo").insertAdjacentHTML("beforebegin",'<button id="gSt">🌐</button>');
+$("#gSt").onclick=()=>{if(!G||G.over)return;G.paused=G.sp||1;G.sp=0;run();modal(`<h2>World status</h2><div class="grid">`+[...G.R].sort((a,b)=>b.inf-a.inf).map(r=>`<div class="card c ok"><b>${r.n}</b><span class="mu">${fm(r.inf)} infected · ${fm(r.dead)} bricked</span><span>${r.cl?"✈⚓ closed":r.aware?"⚠ alert":"·"}</span></div>`).join("")+`</div><button onclick="closeM()">Close</button>`)};
+function end(win,why){G.over=1;clearTimeout(G.tm);const m=DIFF[G.diff][1],xp=win?Math.round(60*m+30):15+Math.min(30,Math.floor(G.day/10)),gp=1+Math.floor(G.day/60)+(win?3:0);
+S.games++;S.xp+=xp;S.gp=(S.gp||0)+gp;if(win){S.wins++;if(G.diff>=2)S.f.b=1;if(G.diff==3)S.f.mb=1;if(G.day<250)S.f.fast=1;if(G.T.rez)S.f.laz=1;if(!G.pat)S.f.ghost=1}chk();save();
+modal(`<h2 style="color:${win?"var(--ak)":"#ffb020"}">${win?"Total system collapse":"Run failed"}</h2><div>${win?"The world’s devices are all yours. You win.":why}</div><div class="mu">Day ${G.day} · +${xp} XP · +${gp} gene points</div><button class="pri" id="rt">Try a new strain</button><button id="mm">Main menu</button>`);
+$("#rt").onclick=()=>{closeM();G=null;show("setup");setup()};$("#mm").onclick=()=>{closeM();G=null;menu()}}
+menu();
+/* ===== v4: hacking groups ===== */
+S.hg=S.hg||{c:[],rep:{},act:"p1"};
+const PK={stealth:["Ghost Cell","+6% stealth per level",{st:.06}],spread:["Swarm","+spread per level",{t:.02}],cpu:["Dark Market","+10% bubble CPU per level",{bub:.1}],patch:["Counter-Intel","+4% patch resistance per level",{pr:.04}],cheap:["Script Mill","Upgrades 4% cheaper per level",{disc:.04}],lethal:["Black Hats","+lethality per level",{l:.01}],fw:["Pen-Testers","+5% firewall bypass per level",{fw:.05}],start:["Seed Fund","+5 starting CPU per level",{}]};
+const PRE=[{id:"p1",name:"Shadow Syndicate",ico:"🥷",perk:"stealth"},{id:"p2",name:"Zero Cool",ico:"😎",perk:"spread"},{id:"p3",name:"Red Lotus",ico:"🌸",perk:"lethal"},{id:"p4",name:"Null Pointers",ico:"💀",perk:"cheap"},{id:"p5",name:"Ghost Net",ico:"👻",perk:"patch"},{id:"p6",name:"Dark Bazaar",ico:"🛒",perk:"cpu"}];
+const EMB=["🐺","🦂","🦅","🐉","🕷","🦊","🦍","🏴","☠","👾","🤖","🔥"];
+const allG=()=>PRE.concat(S.hg.c),grp=()=>allG().find(g=>g.id==S.hg.act),lvG=g=>Math.min(5,1+Math.floor((S.hg.rep[g.id]||0)/50));
+ACH.push(["Founder","Create your own hacking group",s=>s.hg&&s.hg.c.length>0]);
+const oc=calc;calc=function(){oc();const g=grp();if(!g)return;const L=lvG(g),f=PK[g.perk][2],c=G.C;for(const k in f){if(k=="l"&&G.T.arm&&!G.armed)continue;c[k]+=f[k]*L}c.st=Math.min(.85,c.st);c.fw=Math.min(.9,c.fw);c.pr=Math.min(.8,c.pr)};
+const os=start;start=function(o){os(o);const g=grp();if(g){if(g.perk=="start")G.pts+=5*lvG(g);$("#gName").textContent=g.ico+" "+G.name;news(g.name+" is backing this operation.");render()}};
+const oe=end;end=function(w,y){const d=G.day;oe(w,y);const g=grp();if(g){const r=15+(w?25:0)+Math.floor(d/20),b=lvG(g);S.hg.rep[g.id]=(S.hg.rep[g.id]||0)+r;save();toast(g.ico+" "+g.name+" +"+r+" rep"+(lvG(g)>b?" · LEVEL UP!":""))}};
+const os2=setup;setup=function(){os2();const g=grp();$("#bonus").textContent+=" · Group: "+(g?g.ico+" "+g.name+" L"+lvG(g):"none")};
+$("#bGen").insertAdjacentHTML("afterend",'<button id="bHg">🏴 Hacking Groups</button>');
+let hn="",he=EMB[0],hp="stealth";
+function hgui(){const a=S.hg.act;modal(`<h2>Hacking Groups</h2><div class="mu">Join a crew for a permanent perk, or found your own. Groups earn rep every run and level up to 5.</div><div class="grid">`+allG().map(g=>{const L=lvG(g),r=S.hg.rep[g.id]||0;return `<button class="c ${g.id==a?"own":"ok"}" data-j="${g.id}"><b>${g.ico} ${g.name}</b><span class="mu">${PK[g.perk][0]}: ${PK[g.perk][1]}</span><span>Level ${L}${L<5?" · "+r%50+"/50 rep":" · MAX"}${g.id==a?" · ACTIVE":""}</span>${g.id[0]=="c"?`<span class="mu" data-x="${g.id}">✕ disband</span>`:""}</button>`}).join("")+`</div><h2 style="font-size:1.1rem">Found a new group</h2><input id="hgn" maxlength="18" placeholder="Group name" value="${hn}"><div class="chips">${EMB.map(e=>`<button class="chip ${e==he?"sel":""}" data-e="${e}">${e}</button>`).join("")}</div><div class="chips">${Object.keys(PK).map(k=>`<button class="chip ${k==hp?"sel":""}" data-p="${k}">${PK[k][0]}</button>`).join("")}</div><div class="mu">${PK[hp][1]}</div><button class="pri" id="hgc">Create group</button><button onclick="closeM()">Close</button>`);
+const keep=()=>{hn=$("#hgn").value};
+$$("[data-j]").forEach(b=>b.onclick=e=>{const x=e.target.closest("[data-x]");if(x){S.hg.c=S.hg.c.filter(g=>g.id!=x.dataset.x);if(S.hg.act==x.dataset.x)S.hg.act=null}else S.hg.act=S.hg.act==b.dataset.j?null:b.dataset.j;save();keep();hgui()});
+$$("[data-e]").forEach(b=>b.onclick=()=>{keep();he=b.dataset.e;hgui()});$$("[data-p]").forEach(b=>b.onclick=()=>{keep();hp=b.dataset.p;hgui()});
+$("#hgc").onclick=()=>{const n=$("#hgn").value.trim();if(!n||S.hg.c.length>=6)return toast(n?"Max 6 custom groups":"Name your group first");const g={id:"c"+Date.now(),name:n,ico:he,perk:hp};S.hg.c.push(g);S.hg.act=g.id;hn="";chk();save();hgui()}}
+$("#bHg").onclick=hgui;
+/* ===== v5: choose starting country ===== */
+document.head.insertAdjacentHTML("beforeend","<style>select{font:inherit;width:100%;background:linear-gradient(#ffffff40,#ffffff10 50%,#0003 50%);color:#fff;border:1px solid #ffffff66;border-radius:.6em;padding:.4em .6em}select option{color:#000}</style>");
+$("#scs").previousElementSibling.insertAdjacentHTML("beforebegin",'<div class="mu">Starting country</div><select id="org"><option value="">🗺 Choose on the map</option>'+REG.map((r,i)=>`<option value="${i}">${r[0]}</option>`).join("")+'</select>');
+$("#bGo").onclick=()=>{const v=$("#org").value;start(v===""?undefined:+v)};
+/* ===== v6: polish ===== */
+document.head.insertAdjacentHTML("beforeend","<style>.hero{grid-template-columns:1fr 1fr;overflow-y:auto;min-height:0;max-height:100%}h1{font-size:clamp(24px,8vh,60px)}@media(max-height:460px){.sub{display:none}.hero button{font-size:.95rem;padding:.4em .7em}#bPlay{font-size:1.15rem}.side .card{padding:.4em .7em}}@media(max-height:380px){.hero::after{display:none}}</style>");
+const os3=start;start=function(o){os3(o);if(!S.seen){S.seen=1;save();G.paused=G.sp||1;G.sp=0;run();$("#bHow").click()}};
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&G&&!G.over&&G.sp&&!G.paused)$("#gMenu").click()});
+$("#sBack").parentElement.insertAdjacentHTML("beforeend",'<span class="sp"></span><button class="pri" id="bGo2">🚀 Launch</button>');$("#bGo2").onclick=()=>$("#bGo").click();
+</script></body></html>
